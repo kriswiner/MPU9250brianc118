@@ -9,7 +9,9 @@
 #ifndef MPU9250_h
 #define MPU9250_h
 #include "Arduino.h"
- 
+
+// #define AK8963FASTMODE
+
 // mpu9250 registers
 #define MPUREG_XG_OFFS_TC 0x00
 #define MPUREG_YG_OFFS_TC 0x01
@@ -207,15 +209,17 @@
 class MPU9250 {   
 public:
     // constructor. Default low pass filter of 188Hz
-    MPU9250(long clock, uint8_t cs, uint8_t low_pass_filter = BITS_DLPF_CFG_188HZ){
+    MPU9250(long clock, uint8_t cs, uint8_t low_pass_filter = BITS_DLPF_CFG_188HZ, uint8_t low_pass_filter_acc = BITS_DLPF_CFG_188HZ){
         my_clock = clock;
         my_cs = cs;
+        my_low_pass_filter = low_pass_filter;
+        my_low_pass_filter_acc = low_pass_filter_acc;
     }
     unsigned int WriteReg(uint8_t WriteAddr, uint8_t WriteData );
     unsigned int ReadReg(uint8_t WriteAddr, uint8_t WriteData );
     void ReadRegs(uint8_t ReadAddr, uint8_t *ReadBuf, unsigned int Bytes );
  
-    bool init(bool calib = true);
+    bool init(bool calib_gyro = true, bool calib_acc = true);
     void read_temp();
     void read_acc();
     void read_gyro();
@@ -247,10 +251,11 @@ public:
 
     float randomstuff[3];   // seemed to be an issue with memory being disturbed so allocated random memory space here
 
-  private:
+private:
     long my_clock;
     uint8_t my_cs;
-    uint8_t low_pass_filter;
+    uint8_t my_low_pass_filter;
+    uint8_t my_low_pass_filter_acc;
 
     //float randomstuffs[3];
 
